@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Фентезі пригода</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-image: url('https://i.pinimg.com/736x/53/9c/48/539c483ff16585f1014ce8bff226bc56.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #f5f5f5;
+      padding: 30px;
+      min-height: 100vh;
+    }
+    #game { max-width: 700px; margin: auto; background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 10px; }
+    button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #2e8b57;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { background: #3cb371; }
+    #story { white-space: pre-line; margin-bottom: 20px; font-size: 18px; }
+    #end { font-size: 22px; font-weight: bold; color: #00ff7f; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <h1>🧙‍♂️ Фентезі пригода</h1>
+    <div id="story">Ви стоїте на перехресті: попереду ліс, ліворуч — гора, праворуч — село.
+Куди ви підете?</div>
+    <div id="choices">
+      <button onclick="go('forest')">🌲 У ліс</button>
+      <button onclick="go('mountain')">⛰️ До гори</button>
+      <button onclick="go('village')">🏘️ В село</button>
+    </div>
+    <div id="end"></div>
+  </div>
+
+  <script>
+    const story = document.getElementById('story');
+    const choices = document.getElementById('choices');
+    const endText = document.getElementById('end');
+    let inventory = [];
+    let gameOver = false;
+
+    function go(place) {
+      if (gameOver) return;
+
+      if (place === 'forest') {
+        story.innerText = "Ви заходите в темний ліс. Тут тихо і моторошно. Ви бачите стару хатинку і стежку далі. Що виберете?";
+        choices.innerHTML = `
+          <button onclick=\"go('cabin')\">🛖 Дослідити хатинку</button>
+          <button onclick=\"go('deepforest')\">🌲 Іти далі в ліс</button>
+        `;
+      } else if (place === 'cabin') {
+        story.innerText = "У хатинці ви знаходите старого мага, який дає вам магічний амулет і карту. Він каже, що ваше призначення — знищити темного лорда в замку.";
+        inventory.push('амулет', 'карта');
+        choices.innerHTML = `<button onclick=\"go('forest_continue')\">🌲 Продовжити шлях лісом</button>`;
+      } else if (place === 'forest_continue') {
+        story.innerText = "Ви натрапляєте на зачароване озеро. З глибини з'являється водяний дух і пропонує силу в обмін на одне ваше бажання.";
+        choices.innerHTML = `
+          <button onclick=\"go('wish_power')\">💪 Побажати сили</button>
+          <button onclick=\"go('wish_knowledge')\">📜 Побажати знання</button>
+        `;
+      } else if (place === 'wish_power') {
+        story.innerText = "Ви отримуєте силу титана! Тепер ви надзвичайно сильні.";
+        inventory.push('сила');
+        choices.innerHTML = `<button onclick=\"go('start')\">🔄 Назад</button>`;
+      } else if (place === 'wish_knowledge') {
+        story.innerText = "Ви отримали знання древніх. Ваш розум тепер гостріший за меч.";
+        inventory.push('знання');
+        choices.innerHTML = `<button onclick=\"go('start')\">🔄 Назад</button>`;
+      } else if (place === 'deepforest') {
+        story.innerText = "В глибині лісу вас атакують розбійники. Ви втрачаєте частину золота і тікаєте назад.";
+        choices.innerHTML = `<button onclick=\"go('start')\">🔄 Назад</button>`;
+      } else if (place === 'mountain') {
+        story.innerText = "Ви підіймаєтесь до гори. Там вас зустрічає мандрівник, який пропонує обмін скарбів. Ви: ";
+        choices.innerHTML = `
+          <button onclick=\"go('trade')\">💰 Обмінятися</button>
+          <button onclick=\"go('climb')\">🧗 Піднятися на вершину</button>
+        `;
+      } else if (place === 'trade') {
+        story.innerText = "Мандрівник обмінює ваше срібло на зілля невидимості.";
+        inventory.push('невидимість');
+        choices.innerHTML = `<button onclick=\"go('start')\">🔄 Назад</button>`;
+      } else if (place === 'climb') {
+        story.innerText = "На вершині ви знаходите чарівний меч.";
+        inventory.push('меч');
+        choices.innerHTML = `<button onclick=\"go('start')\">🔄 Назад</button>`;
+      } else if (place === 'village') {
+        story.innerText = "В селі вас зустрічають з підозрою. Ви можете піти на ринок або в таверну.";
+        choices.innerHTML = `
+          <button onclick=\"go('market')\">🛒 Ринок</button>
+          <button onclick=\"go('tavern')\">🍺 Таверна</button>
+        `;
+      } else if (place === 'market') {
+        story.innerText = "На ринку ви купуєте зілля. Місцеві поважають вас як героя.";
+        inventory.push('зілля');
+        choices.innerHTML = `<button onclick=\"go('start')\">🔄 Назад</button>`;
+      } else if (place === 'tavern') {
+        story.innerText = "У таверні ви чуєте про темне прокляття в замку неподалік... Пригода тільки починається.";
+        choices.innerHTML = `<button onclick=\"go('castle')\">🏰 Йти до замку</button>`;
+      } else if (place === 'castle') {
+        story.innerText = "Замок охороняє темний лицар. Ви рішуче вступаєте в битву!";
+        choices.innerHTML = `<button onclick=\"go('fight')\">⚔️ Битись</button>`;
+      } else if (place === 'fight') {
+        story.innerText = "Ви вступаєте в битву з темним лордом і, після запеклої боротьби, перемагаєте його. Королівство врятоване!";
+        endText.innerText = "🎉 ВИ ВИГРАЛИ! ДЯКУЄМО ЗА ГРУ!";
+        choices.innerHTML = `<button onclick=\"go('start')\">🔄 Почати заново</button>`;
+        gameOver = true;
+      } else if (place === 'start') {
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
